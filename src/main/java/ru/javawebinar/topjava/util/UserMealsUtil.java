@@ -32,23 +32,23 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        Map<LocalDate, Integer> flags = new HashMap<>();
-        meals.forEach(i -> flags.merge(localDateConverter(i.getDateTime()), i.getCalories(), Integer::sum));
+        Map<LocalDate, Integer> sumCaloriesPerDay = new HashMap<>();
+        meals.forEach(meal -> sumCaloriesPerDay.merge(localDateConverter(meal.getDateTime()), meal.getCalories(), Integer::sum));
         List<UserMealWithExcess> result = new ArrayList<>();
         for (UserMeal meal : meals) {
             LocalTime currentMealTime = LocalTime.of(meal.getDateTime().getHour(), meal.getDateTime().getMinute());
             if (currentMealTime.isAfter(startTime) && currentMealTime.isBefore(endTime)) {
-                boolean excess = flags.get(localDateConverter(meal.getDateTime())) > caloriesPerDay;
+                boolean excess = sumCaloriesPerDay.get(localDateConverter(meal.getDateTime())) > caloriesPerDay;
                 result.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess));
             }
         }
         return result;
     }
 
-    private static LocalDate localDateConverter(LocalDateTime time) {
-        int year = time.getYear();
-        Month mount = time.getMonth();
-        int day = time.getDayOfMonth();
+    private static LocalDate localDateConverter(LocalDateTime date) {
+        int year = date.getYear();
+        Month mount = date.getMonth();
+        int day = date.getDayOfMonth();
         return LocalDate.of(year, mount, day);
     }
 
