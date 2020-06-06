@@ -28,19 +28,13 @@ public class MealsUtil {
         return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
-    public static List<MealTo> mergeMeals(List<Meal> mealList, List<MealTo> mealToList) {
+    public static List<MealTo> merge(List<Meal> mealList, List<MealTo> mealToList) {
         List<MealTo> result = new ArrayList<>();
-        for (Meal meal : mealList) {
-            for (MealTo mealTo : mealToList) {
-                if (mealTo.getDescription().equals(meal.getDescription()) ||
-                        mealTo.getCalories() == meal.getCalories() ||
-                        mealTo.getDateTime().equals(meal.getDateTime())) {
-                    result.add(mealTo);
-                } else {
-                    result.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), false));
-                }
-            }
-        }
+        mealList.forEach(meal -> result.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), false)));
+        List<MealTo> listToDelete = new ArrayList<>();
+        mealToList.forEach(mealTo -> listToDelete.add(new MealTo(mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), false)));
+        result.removeAll(listToDelete);
+        result.addAll(mealToList);
         return result;
     }
 }

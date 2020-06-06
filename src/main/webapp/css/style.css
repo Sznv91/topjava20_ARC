@@ -1,0 +1,13 @@
+table {
+    border: 1px solid grey;
+}
+
+th {
+    border: 1px solid grey;
+    background-color: darkgray;
+}
+
+td {
+    border: 1px solid grey;
+    background-color: gainsboro
+}

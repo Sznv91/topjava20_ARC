@@ -10,24 +10,10 @@
 <html>
 <head>
     <title>Meals Page</title>
-    <style>
-        table {
-            border: 1px solid grey;
-        }
-
-        th {
-            border: 1px solid grey;
-            background-color: darkgray;
-        }
-
-        td {
-            border: 1px solid grey;
-            background-color: gainsboro
-        }
-    </style>
+    <link rel="stylesheet" href="<c:url value="/css/style.css"/>">
 </head>
 <body>
-Test meal body
+Meal page
 <table>
     <tr>
         <th>date</th>
@@ -35,8 +21,7 @@ Test meal body
         <th>description</th>
         <th>calories</th>
         <th>excess</th>
-    </tr> <!--ряд с ячейками заголовков-->
-
+    </tr>
     <jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>
     <c:forEach var="element" items="${meals}">
         <jsp:useBean id="element" type="ru.javawebinar.topjava.model.MealTo"/>
@@ -45,17 +30,13 @@ Test meal body
             <td>${element.dateTime.toLocalTime()}</td>
             <td>${element.description}</td>
             <td>${element.calories}</td>
-            <c:choose>
-                <c:when test="${element.excess == 'true'}">
-                    <td style="background-color: greenyellow">${element.excess}</td>
-                </c:when>
-                <c:otherwise>
-                    <td style="background-color: red">${element.excess}</td>
-                </c:otherwise>
-            </c:choose>
+            <td style="background-color:
+                <c:out value="${element.excess ? 'greenyellow' : 'red'}"/>
+                    ">${element.excess}</td>
         </tr>
     </c:forEach>
 </table>
-
+<br>
+<input type="button" value="Back" onclick="history.go(-1)">
 </body>
 </html>
