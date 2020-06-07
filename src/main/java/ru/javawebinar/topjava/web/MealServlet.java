@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.storage.ListMealStorage;
+import ru.javawebinar.topjava.storage.MapMealStorage;
 import ru.javawebinar.topjava.storage.MealStorage;
 import ru.javawebinar.topjava.util.MealsData;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -27,7 +28,7 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         log = getLogger(UserServlet.class);
-        mealStorage = new ListMealStorage();
+        mealStorage = new MapMealStorage();
         super.init();
     }
 
