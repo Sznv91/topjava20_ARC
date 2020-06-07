@@ -9,11 +9,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>Meals Page</title>
+    <title>Meals Predefined Page</title>
     <link rel="stylesheet" href="<c:url value="/css/style.css"/>">
 </head>
 <body>
-Meal page
+Meal predefined page
 <table>
     <tr>
         <th>date</th>
