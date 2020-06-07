@@ -25,16 +25,20 @@ public class MealsUtil {
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
-    public static List<MealTo> merge(List<Meal> mealList, List<MealTo> mealToList) {
+    public static List<MealTo> convertToMealTo(List<Meal> mealList, List<MealTo> mealToList) {
         List<MealTo> result = new ArrayList<>();
-        mealList.forEach(meal -> result.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), false)));
+        mealList.forEach(meal -> result.add(new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), false)));
         List<MealTo> listToDelete = new ArrayList<>();
-        mealToList.forEach(mealTo -> listToDelete.add(new MealTo(mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), false)));
+        mealToList.forEach(mealTo -> listToDelete.add(new MealTo(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), false)));
         result.removeAll(listToDelete);
         result.addAll(mealToList);
         return result;
+    }
+
+    public static String generateUUID() {
+        return String.valueOf(1 + (int) (Math.random() * 10000));
     }
 }
