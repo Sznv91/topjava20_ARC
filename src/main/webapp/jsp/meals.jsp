@@ -30,8 +30,8 @@ View Page
         <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
         <tr style="color:
             <c:out value="${meal.excess ? 'red' : 'green'}"/>">
-            <td><%=meal.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))%>
-            </td>
+            <jsp:useBean id="DateTimeFormatter" type="java.time.format.DateTimeFormatter" scope="request"/>
+            <td><c:out value="${meal.dateTime.format(DateTimeFormatter)}"/></td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
             <td><a href="./meals?action=delete&id=${meal.id}"> delete </a>

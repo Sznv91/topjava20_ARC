@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -22,13 +23,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     private static Logger log;
     private MealStorage mealStorage;
-    private DateTimeFormatter formatter;
+    private DateTimeFormatter dtf;
 
     @Override
     public void init() throws ServletException {
         log = getLogger(MealServlet.class);
         mealStorage = new MapMealStorage();
-        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,7 +41,15 @@ public class MealServlet extends HttpServlet {
         String description = request.getParameter("description");
         String action = request.getParameter("action");
         log.debug(action + " post method. ID: " + id);
-        mealStorage.update(id, ldt, description, calories);
+        Meal meal = new Meal(id, ldt, description, calories);
+        switch (action) {
+            case "update":
+                mealStorage.update(meal);
+                break;
+            case "add":
+                mealStorage.create(meal);
+                break;
+        }
         response.sendRedirect("meals");
     }
 
@@ -55,9 +64,8 @@ public class MealServlet extends HttpServlet {
                 response.sendRedirect("meals");
                 break;
             case "add":
-                String now = LocalDateTime.now().format(formatter);
-                LocalDateTime nowWithoutSeconds = LocalDateTime.parse(now, formatter);
-                Meal meal = mealStorage.create(nowWithoutSeconds, "", 0);
+                LocalDateTime nowWithoutSeconds = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+                Meal meal = new Meal(0, nowWithoutSeconds, "", 0);
                 log.debug("Create meal ID: " + meal.getId() + ". Forward to new.jsp");
                 request.setAttribute("meal", meal);
                 request.setAttribute("action", "add");
@@ -77,6 +85,7 @@ public class MealServlet extends HttpServlet {
                 List<MealTo> filteredMeals = MealsUtil.filteredByStreams(mealStorage.getAll(), LocalTime.MIN, LocalTime.MAX, caloriesLimitInt);
                 request.setAttribute("storage", filteredMeals);
                 request.setAttribute("limit", caloriesLimitInt);
+                request.setAttribute("DateTimeFormatter", dtf);
                 request.getRequestDispatcher("jsp/meals.jsp").forward(request, response);
                 break;
         }
