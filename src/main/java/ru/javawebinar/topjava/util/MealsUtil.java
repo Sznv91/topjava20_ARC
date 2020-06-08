@@ -5,7 +5,6 @@ import ru.javawebinar.topjava.model.MealTo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,19 +25,5 @@ public class MealsUtil {
 
     private static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
-    }
-
-    public static List<MealTo> convertToMealTo(List<Meal> mealList, List<MealTo> mealToList) {
-        List<MealTo> result = new ArrayList<>();
-        mealList.forEach(meal -> result.add(new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), false)));
-        List<MealTo> listToDelete = new ArrayList<>();
-        mealToList.forEach(mealTo -> listToDelete.add(new MealTo(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), false)));
-        result.removeAll(listToDelete);
-        result.addAll(mealToList);
-        return result;
-    }
-
-    public static String generateUUID() {
-        return String.valueOf(1 + (int) (Math.random() * 10000));
     }
 }

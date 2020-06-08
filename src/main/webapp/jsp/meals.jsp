@@ -11,7 +11,7 @@
 <body>
 View Page
 <br><a href="./">Go home</a>
-<br> <a href="./meals?action=add">new Meal</a> | <a href="./meals?action=fillPredefined">fill predefined meal</a>
+<br> <a href="./meals?action=add">new Meal</a>
 <br>Calorie limit:
 <form name="calories_limit" method="get" action="meals">
     <input type="number" name="limit" value="${limit}"/>

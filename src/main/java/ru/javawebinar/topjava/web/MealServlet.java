@@ -22,30 +22,26 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     private static Logger log;
     private MealStorage mealStorage;
+    private DateTimeFormatter formatter;
 
     @Override
     public void init() throws ServletException {
-        log = getLogger(UserServlet.class);
+        log = getLogger(MealServlet.class);
         mealStorage = new MapMealStorage();
-        super.init();
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        String uuid = request.getParameter("uuid");
+        int id = Integer.parseInt(request.getParameter("id"));
         String date = request.getParameter("date");
         LocalDateTime ldt = LocalDateTime.parse(date);
-        String calories = request.getParameter("calories");
+        int calories = Integer.parseInt(request.getParameter("calories"));
         String description = request.getParameter("description");
         String action = request.getParameter("action");
-        if (action.equals("update")) {
-            log.debug("update post method. UUID: " + uuid);
-            mealStorage.update(new Meal(uuid, ldt, description, Integer.parseInt(calories)));
-        } else {
-            log.debug("add post method. UUID: " + uuid);
-            mealStorage.create(new Meal(uuid, ldt, description, Integer.parseInt(calories)));
-        }
-        response.sendRedirect("./meals");
+        log.debug(action + " post method. ID: " + id);
+        mealStorage.update(id, ldt, description, calories);
+        response.sendRedirect("meals");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -53,38 +49,33 @@ public class MealServlet extends HttpServlet {
         action = action == null ? "null" : action;
         switch (action) {
             case "delete":
-                String uuid = request.getParameter("id");
-                log.debug("Delete meal uuid: " + uuid + ". Redirect to ./meals");
-                mealStorage.remove(uuid);
-                response.sendRedirect("./meals");
+                int id = Integer.parseInt(request.getParameter("id"));
+                log.debug("Delete meal ID: " + id + ". Redirect to .meals");
+                mealStorage.remove(id);
+                response.sendRedirect("meals");
                 break;
             case "add":
-                String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                LocalDateTime nowWithoutSeconds = LocalDateTime.parse(now, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                Meal meal = new Meal(MealsUtil.generateUUID(), nowWithoutSeconds, "", 0);
-                log.debug("Create meal uuid: " + meal.getId() + ". Forward to new.jsp");
+                String now = LocalDateTime.now().format(formatter);
+                LocalDateTime nowWithoutSeconds = LocalDateTime.parse(now, formatter);
+                Meal meal = mealStorage.create(nowWithoutSeconds, "", 0);
+                log.debug("Create meal ID: " + meal.getId() + ". Forward to new.jsp");
                 request.setAttribute("meal", meal);
                 request.setAttribute("action", "add");
                 request.getRequestDispatcher("jsp/new.jsp").forward(request, response);
                 break;
             case "update":
-                uuid = request.getParameter("id");
-                log.debug("Update meal uuid: " + uuid + ". Forward to new.jsp");
-                request.setAttribute("meal", mealStorage.get(uuid));
+                id = Integer.parseInt(request.getParameter("id"));
+                log.debug("Update meal ID: " + id + ". Forward to new.jsp");
+                request.setAttribute("meal", mealStorage.get(id));
                 request.setAttribute("action", "update");
                 request.getRequestDispatcher("jsp/new.jsp").forward(request, response);
-                break;
-            case "fillPredefined":
-                log.debug("fill Predefined from ./util/MealsData.java");
-                mealStorage.fillPredefined();
-                response.sendRedirect("./meals");
                 break;
             default:
                 log.debug("forward to meals.jsp");
                 String caloriesLimit = request.getParameter("limit");
                 int caloriesLimitInt = caloriesLimit == null ? 2000 : Integer.parseInt(caloriesLimit);
                 List<MealTo> filteredMeals = MealsUtil.filteredByStreams(mealStorage.getAll(), LocalTime.MIN, LocalTime.MAX, caloriesLimitInt);
-                request.setAttribute("storage", MealsUtil.convertToMealTo(mealStorage.getAll(), filteredMeals));
+                request.setAttribute("storage", filteredMeals);
                 request.setAttribute("limit", caloriesLimitInt);
                 request.getRequestDispatcher("jsp/meals.jsp").forward(request, response);
                 break;

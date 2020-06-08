@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class MealTo {
+
+    private final int id;
+
     private final LocalDateTime dateTime;
 
     private final String description;
@@ -12,9 +15,7 @@ public class MealTo {
 
     private final boolean excess;
 
-    private final String id;
-
-    public MealTo(String id, LocalDateTime dateTime, String description, int calories, boolean excess) {
+    public MealTo(int id, LocalDateTime dateTime, String description, int calories, boolean excess) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;
@@ -38,7 +39,7 @@ public class MealTo {
         return excess;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -50,21 +51,5 @@ public class MealTo {
                 ", calories=" + calories +
                 ", excess=" + excess +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MealTo mealTo = (MealTo) o;
-        return calories == mealTo.calories &&
-                excess == mealTo.excess &&
-                Objects.equals(dateTime, mealTo.dateTime) &&
-                Objects.equals(description, mealTo.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(dateTime, description, calories, excess);
     }
 }
