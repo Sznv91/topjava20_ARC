@@ -4,15 +4,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>new Meal</title>
+    <jsp:useBean id="action" type="java.lang.String" scope="request"/>
+    <title>${action} Meal</title>
     <link rel="stylesheet" href="<c:url value="/css/style.css"/>">
 </head>
 <body>
+<c:out value="Operation: ${action}"/>
 <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-
 <form action="meals" method="post">
     <input type="hidden" name="uuid" value="${meal.id}">
-    <jsp:useBean id="action" type="java.lang.String" scope="request"/>
     <input type="hidden" name="action" value="${action}">
     calories<input type="number" name="calories" value="${meal.calories}"/>
     <br>date<input type="datetime-local" name="date"

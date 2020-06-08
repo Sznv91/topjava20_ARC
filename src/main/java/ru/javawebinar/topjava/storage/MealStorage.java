@@ -17,4 +17,6 @@ public interface MealStorage {
     Meal update(Meal meal);
 
     List<Meal> getAll();
+
+    void fillPredefined();
 }

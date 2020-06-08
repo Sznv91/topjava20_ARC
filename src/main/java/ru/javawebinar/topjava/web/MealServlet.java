@@ -3,10 +3,8 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.storage.ListMealStorage;
 import ru.javawebinar.topjava.storage.MapMealStorage;
 import ru.javawebinar.topjava.storage.MealStorage;
-import ru.javawebinar.topjava.util.MealsData;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletException;
@@ -78,7 +76,7 @@ public class MealServlet extends HttpServlet {
                 break;
             case "fillPredefined":
                 log.debug("fill Predefined from ./util/MealsData.java");
-                mealStorage.addList(MealsData.getInstance().meals);
+                mealStorage.fillPredefined();
                 response.sendRedirect("./meals");
                 break;
             default:
