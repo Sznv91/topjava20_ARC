@@ -6,6 +6,7 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalTime;
@@ -33,7 +34,11 @@ public class MealService {
     }
 
     public Meal get(int id) {
-        return repository.get(id, authUserId());
+        if (repository.get(id,authUserId()).getUserID().equals(authUserId())){
+            return repository.get(id, authUserId());
+        } else {
+            throw new NotFoundException("meal " + id + " not belong userID " + authUserId());
+        }
     }
 
     public List<MealTo> getAll() {
@@ -45,6 +50,8 @@ public class MealService {
                 .equals(meal.getUserID());
         if (userPassAuth) {
             checkNotFoundWithId(repository.save(meal), authUserId());
+        } else {
+            throw new NotFoundException("meal " + meal.getId() + " not belong userID " + authUserId());
         }
 
     }
