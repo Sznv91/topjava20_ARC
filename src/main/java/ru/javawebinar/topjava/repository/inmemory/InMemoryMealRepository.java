@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
+import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+@Repository
 public class InMemoryMealRepository implements MealRepository {
     private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
@@ -31,13 +33,15 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public boolean delete(int id) {
-        return repository.remove(id) != null;
+    public boolean delete(int id, int userID) {
+        Meal meal = repository.get(id);
+        return meal.getUserID().equals(userID) && (repository.remove(id) != null);
     }
 
     @Override
     public Meal get(int id, int userID) {
-        return repository.get(id).getUserID().equals(userID) ? repository.get(id) : null;
+        Meal meal = repository.get(id);
+        return meal.getUserID().equals(userID) ? meal : null;
     }
 
     @Override
