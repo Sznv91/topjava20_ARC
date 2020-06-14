@@ -7,13 +7,14 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @Service
 public class MealService {
@@ -26,34 +27,27 @@ public class MealService {
     }
 
     public Meal save(Meal meal) {
-        return meal.getUserID().equals(authUserId()) ? repository.save(meal) : null;
+        return repository.save(meal);
     }
 
-    public void delete(int id) {
-        checkNotFoundWithId(repository.delete(id, authUserId()), id);
+    public void delete(int id, int userId) {
+        checkNotFoundWithId(repository.delete(id, userId), id);
     }
 
-    public Meal get(int id) {
-        if (repository.get(id,authUserId()).getUserID().equals(authUserId())){
-            return repository.get(id, authUserId());
+    public Meal get(int id, int userId) {
+        return checkNotFoundWithId(repository.get(id, userId), id);
+    }
+
+    public List<MealTo> getAll(int userId, int caloriesPerDay) {
+        return MealsUtil.getFilteredTos(repository.getAll(userId), caloriesPerDay, LocalTime.MIN, LocalTime.MAX);
+    }
+
+    public void update(Meal meal, int userId) {
+        if (meal.getUserID().equals(userId)) {
+            checkNotFoundWithId(repository.save(meal), meal.getId());
         } else {
-            throw new NotFoundException("meal " + id + " not belong userID " + authUserId());
+            throw new NotFoundException("meal " + meal.getId() + " not belong userID " + userId);
         }
-    }
-
-    public List<MealTo> getAll() {
-        return MealsUtil.getFilteredTos(repository.getAll(), SecurityUtil.authUserCaloriesPerDay(), LocalTime.MAX, LocalTime.MIN);
-    }
-
-    public void update(Meal meal) {
-        boolean userPassAuth = repository.get(meal.getId(), authUserId()).getUserID()
-                .equals(meal.getUserID());
-        if (userPassAuth) {
-            checkNotFoundWithId(repository.save(meal), authUserId());
-        } else {
-            throw new NotFoundException("meal " + meal.getId() + " not belong userID " + authUserId());
-        }
-
     }
 
 }

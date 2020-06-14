@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
+    private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
     private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -34,6 +37,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userID) {
+        log.info("delete {} userID " + userID, id);
         Meal meal = repository.get(id);
         return meal.getUserID().equals(userID) && (repository.remove(id) != null);
     }
@@ -45,10 +49,12 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll() {
+    public Collection<Meal> getAll(int userID) {
         return repository.values()
-                .stream().sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .parallelStream().filter(meal -> meal.getUserID().equals(userID))
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
+
 }
 
