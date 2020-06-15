@@ -41,7 +41,7 @@ public class MealRestController {
 
     public Meal save(Meal meal) {
         log.info("save{}", meal);
-        return service.save(meal);
+        return service.save(meal, authUserId());
     }
 
     public void update(Meal meal) {

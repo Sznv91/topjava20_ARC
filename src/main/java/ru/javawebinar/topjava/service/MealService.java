@@ -9,11 +9,8 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
@@ -27,8 +24,8 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal save(Meal meal) {
-        return repository.save(meal);
+    public Meal save(Meal meal, int userId) {
+        return repository.save(meal, userId);
     }
 
     public void delete(int id, int userId) {
@@ -45,7 +42,7 @@ public class MealService {
 
     public void update(Meal meal, int userId) {
         if (meal.getUserID().equals(userId)) {
-            checkNotFoundWithId(repository.save(meal), meal.getId());
+            checkNotFoundWithId(repository.save(meal, userId), meal.getId());
         } else {
             throw new NotFoundException("meal " + meal.getId() + " not belong userID " + userId);
         }

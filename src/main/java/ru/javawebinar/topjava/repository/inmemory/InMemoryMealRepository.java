@@ -9,8 +9,6 @@ import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -25,37 +23,43 @@ public class InMemoryMealRepository implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(this::save);
+        MealsUtil.MEALS.forEach(meal -> save(meal, 1));
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
+            meal.setUserId(userId);
             repository.put(meal.getId(), meal);
             return meal;
+        } else {
+            if (meal.getUserID().equals(userId)) {
+                return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+            }
+            return null;
         }
+
         // handle case: update, but not present in storage
-        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
-    public boolean delete(int id, int userID) {
-        log.info("delete {} userID " + userID, id);
+    public boolean delete(int id, int userId) {
+        log.info("delete id={} userId={} ", id, userId);
         Meal meal = repository.get(id);
-        return meal.getUserID().equals(userID) && (repository.remove(id) != null);
+        return meal.getUserID().equals(userId) && (repository.remove(id) != null);
     }
 
     @Override
-    public Meal get(int id, int userID) {
+    public Meal get(int id, int userId) {
         Meal meal = repository.get(id);
-        return meal.getUserID().equals(userID) ? meal : null;
+        return meal.getUserID().equals(userId) ? meal : null;
     }
 
     @Override
-    public List<Meal> getAll(int userID) {
+    public List<Meal> getAll(int userId) {
         return repository.values()
-                .parallelStream().filter(meal -> meal.getUserID().equals(userID))
+                .parallelStream().filter(meal -> meal.getUserID().equals(userId))
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
@@ -64,7 +68,7 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getFilteredByDate(int userId, LocalDate start, LocalDate end) {
         return getAll(userId).parallelStream().filter(meal ->
                 meal.getDate().compareTo(start) >= 0 &&
-                meal.getDate().compareTo(end) <= 0).collect(Collectors.toList());
+                        meal.getDate().compareTo(end) <= 0).collect(Collectors.toList());
     }
 
 }
