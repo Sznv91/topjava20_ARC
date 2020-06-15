@@ -9,6 +9,7 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
@@ -24,12 +25,17 @@ public class MealRestController {
     }
 
     public List<MealTo> getAll() {
-        log.info("getAll. userID={}", authUserId());
+        log.info("getAll. userId={}", authUserId());
         return service.getAll(authUserId(), SecurityUtil.authUserCaloriesPerDay());
     }
 
+    public List<MealTo> getFilteredByDate(LocalDate start, LocalDate end) {
+        log.info("getFilteredByDate userId={} startDate={} endDate={}", authUserId(), start.toString(), end.toString());
+        return service.getFilteredByDate(authUserId(), SecurityUtil.authUserCaloriesPerDay(), start, end);
+    }
+
     public Meal get(int id) {
-        log.info("get ID={} userID={}", id, authUserId());
+        log.info("get Id={} userId={}", id, authUserId());
         return service.get(id, authUserId());
     }
 
@@ -44,7 +50,7 @@ public class MealRestController {
     }
 
     public void delete(int id) {
-        log.info("delete id={} userID={}", id, authUserId());
+        log.info("delete id={} userId={}", id, authUserId());
         service.delete(id, authUserId());
     }
 }

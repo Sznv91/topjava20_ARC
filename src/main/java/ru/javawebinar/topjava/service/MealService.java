@@ -8,6 +8,7 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Comparator;
@@ -50,4 +51,7 @@ public class MealService {
         }
     }
 
+    public List<MealTo> getFilteredByDate(int authUserId, int caloriesPerDay, LocalDate start, LocalDate end) {
+        return MealsUtil.getFilteredTos(repository.getFilteredByDate(authUserId, start, end), caloriesPerDay, LocalTime.MIN, LocalTime.MAX);
+    }
 }
