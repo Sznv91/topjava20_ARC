@@ -51,9 +51,8 @@ public class MealServlet extends HttpServlet {
                 response.sendRedirect("meals");
                 break;
             case "filter":
-                LocalDate startDate = LocalDate.parse(request.getParameter("dateFilterStart"));
-                LocalDate endDate = LocalDate.parse(request.getParameter("dateFilterEnd"));
-                System.out.println(request.getParameter("timeFilterStart") + " test");
+                LocalDate startDate = request.getParameter("dateFilterStart").equals("") ? LocalDate.MIN : LocalDate.parse(request.getParameter("dateFilterStart"));
+                LocalDate endDate = request.getParameter("dateFilterEnd").equals("") ? LocalDate.MAX : LocalDate.parse(request.getParameter("dateFilterEnd"));
                 LocalTime startTime = request.getParameter("timeFilterStart").equals("") ? LocalTime.MIN : LocalTime.parse(request.getParameter("timeFilterStart"));
                 LocalTime endTime = request.getParameter("timeFilterEnd").equals("") ? LocalTime.MAX : LocalTime.parse(request.getParameter("timeFilterEnd"));
                 request.setAttribute("meals", mealRestController.getFilteredByDate(startDate, startTime, endDate, endTime));
