@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
-    private Map<Integer, Map<Integer, Meal>> repoByUserId = new ConcurrentHashMap<>(); //k:userId v:MealList
+    private Map<Integer, Map<Integer, Meal>> repoByUserId = new ConcurrentHashMap<>(); //k:userId v:Map k:mealId v:Meal
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
@@ -72,7 +72,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public List<Meal> getFilteredByDate(int userId, LocalDate start, LocalDate end) {
         return repoByUserId.get(userId).values().parallelStream().filter(meal -> meal.getDate().compareTo(start) >= 0
-                && meal.getDate().compareTo(end) >= 0).collect(Collectors.toList());
+                && meal.getDate().compareTo(end) <= 0).collect(Collectors.toList());
     }
 
 }
