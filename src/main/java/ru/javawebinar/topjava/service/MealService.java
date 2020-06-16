@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,7 +23,7 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal save(Meal meal, int userId) {
+    public Meal create(Meal meal, int userId) {
         return repository.save(meal, userId);
     }
 
@@ -37,18 +36,14 @@ public class MealService {
     }
 
     public List<MealTo> getAll(int userId, int caloriesPerDay) {
-        return MealsUtil.getFilteredTos(repository.getAll(userId), caloriesPerDay, LocalTime.MIN, LocalTime.MAX);
+        return MealsUtil.getTos(repository.getAll(userId), caloriesPerDay);
     }
 
-    public void update(Meal meal, int userId) {
-        if (meal.getUserID().equals(userId)) {
-            checkNotFoundWithId(repository.save(meal, userId), meal.getId());
-        } else {
-            throw new NotFoundException("meal " + meal.getId() + " not belong userID " + userId);
-        }
+    public void update(Meal meal, int id, int userId) {
+        checkNotFoundWithId(repository.save(meal, userId), id);
     }
 
-    public List<MealTo> getFilteredByDate(int authUserId, int caloriesPerDay, LocalDate start, LocalDate end) {
-        return MealsUtil.getFilteredTos(repository.getFilteredByDate(authUserId, start, end), caloriesPerDay, LocalTime.MIN, LocalTime.MAX);
+    public List<MealTo> getFilteredByDate(int authUserId, int caloriesPerDay, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
+        return MealsUtil.getFilteredTos(repository.getFilteredByDate(authUserId, startDate, endDate), caloriesPerDay, LocalTime.MIN, LocalTime.MAX);
     }
 }
