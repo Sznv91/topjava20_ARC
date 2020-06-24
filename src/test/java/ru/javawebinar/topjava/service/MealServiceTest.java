@@ -72,6 +72,13 @@ public class MealServiceTest {
     }
 
     @Test
+    public void updateAnotherUser() {
+        Meal meal = meal4;
+        meal.setDescription("UPDATE MEAL");
+        assertThrows(NotFoundException.class, () ->service.update(meal, ADMIN_ID));
+    }
+
+    @Test
     public void create() {
         assertThrows(NotFoundException.class, () -> service.get(100010, USER_ID));
         Meal expected = new Meal(LocalDateTime.of(2020, 6, 24, 23, 59), "New created meal", 1996);
