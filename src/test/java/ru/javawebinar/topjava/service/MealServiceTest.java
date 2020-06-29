@@ -62,8 +62,7 @@ public class MealServiceTest {
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
-        assertEquals(ADMIN_MEAL1, actual);
-//        MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
+        MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
     }
 
     @Test
@@ -80,8 +79,7 @@ public class MealServiceTest {
     public void update() throws Exception {
         Meal updated = getUpdated();
         service.update(updated, USER_ID);
-        assertEquals(updated, service.get(MEAL1_ID, USER_ID));
-        //MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), getUpdated());
+        MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), getUpdated());
     }
 
     @Test
@@ -91,24 +89,19 @@ public class MealServiceTest {
 
     @Test
     public void getAll() throws Exception {
-        assertEquals(MEALS, service.getAll(USER_ID));
-//        MEAL_MATCHER.assertMatch(service.getAll(USER_ID), MEALS);
+        MEAL_MATCHER.assertMatch(service.getAll(USER_ID), MEALS);
     }
 
     @Test
     public void getBetweenInclusive() throws Exception {
-        assertEquals(Arrays.asList(MEAL3, MEAL2, MEAL1), service.getBetweenInclusive(
-                LocalDate.of(2020, Month.JANUARY, 30),
-                LocalDate.of(2020, Month.JANUARY, 30), USER_ID));
-        /*MEAL_MATCHER.assertMatch(service.getBetweenInclusive(
+        MEAL_MATCHER.assertMatch(service.getBetweenInclusive(
                 LocalDate.of(2020, Month.JANUARY, 30),
                 LocalDate.of(2020, Month.JANUARY, 30), USER_ID),
-                MEAL3, MEAL2, MEAL1);*/
+                MEAL3, MEAL2, MEAL1);
     }
 
     @Test
     public void getBetweenWithNullDates() throws Exception {
-        assertEquals(MEALS, service.getBetweenInclusive(null,null,USER_ID));
-//        MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
+        MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
     }
 }
