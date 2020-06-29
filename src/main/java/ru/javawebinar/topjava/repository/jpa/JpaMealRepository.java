@@ -41,7 +41,7 @@ public class JpaMealRepository implements MealRepository {
         User user = em.find(User.class, userId);
         Meal meal = em.find(Meal.class, id);
         if (user != null && meal != null && user.equals(meal.getUser())) {
-            return em.createNativeQuery("DELETE FROM meals m WHERE m.id=?").setParameter(1, id).executeUpdate() != 0;
+            return em.createNamedQuery(Meal.DELETE).setParameter("id", id).executeUpdate() != 0;
         }
         return false;
 
@@ -59,15 +59,17 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return em.createNativeQuery("SELECT * FROM meals WHERE user_id=? ORDER BY date_time DESC", Meal.class).setParameter(1, userId).getResultList();
+        return em.createNamedQuery(Meal.GET_ALL, Meal.class)
+                .setParameter("user_id", userId)
+                .getResultList();
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return em.createNativeQuery("SELECT * FROM meals WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC", Meal.class)
-                .setParameter(1, userId)
-                .setParameter(2, startDateTime)
-                .setParameter(3, endDateTime)
+        return em.createNamedQuery(Meal.GET_BETWEEN_HALF_OPEN, Meal.class)
+                .setParameter("user_id", userId)
+                .setParameter("start_date_time", startDateTime)
+                .setParameter("end_date_time", endDateTime)
                 .getResultList();
     }
 }
