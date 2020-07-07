@@ -13,22 +13,22 @@ public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudRepository;
 
-    private final DataJpaUserRepository userRepository;
+    private final CrudUserRepository crudUserRepository;
 
-    public DataJpaMealRepository(CrudMealRepository crudRepository, DataJpaUserRepository userRepository) {
+    public DataJpaMealRepository(CrudMealRepository crudRepository, CrudUserRepository userRepository) {
         this.crudRepository = crudRepository;
-        this.userRepository = userRepository;
+        this.crudUserRepository = userRepository;
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
-        User user = userRepository.get(userId);
+        User user = crudUserRepository.getOne(userId);
         if (meal.isNew()) {
             meal.setUser(user);
             return crudRepository.save(meal);
         } else {
-            Meal existMeal = crudRepository.getByIdAndUserId(meal.getId(), userId);
-            if (existMeal != null && existMeal.equals(meal)) {
+            Meal existMeal = crudRepository.findById(meal.getId()).orElse(null);
+            if (existMeal != null && existMeal.getUser().id() == userId) {
                 meal.setUser(user);
                 return crudRepository.save(meal);
 
@@ -40,23 +40,12 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        Meal existMeal = crudRepository.getByIdAndUserId(id, userId);
-        if (existMeal != null && existMeal.getUser().getId().equals(userId)) {
-            return crudRepository.deleteById(id) != 0;
-        } else {
-            return false;
-        }
-
+       return crudRepository.deleteByIdAndUserId(id, userId) != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        Meal existMeal = crudRepository.getByIdAndUserId(id, userId);
-        if (existMeal != null && existMeal.getUser().getId().equals(userId)) {
-            return crudRepository.findById(id).orElse(null);
-        } else {
-            return null;
-        }
+        return crudRepository.getByIdAndUserId(id, userId);
     }
 
     @Override
